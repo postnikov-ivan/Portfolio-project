@@ -2,8 +2,16 @@ const gulp = require('gulp');
 const pug = require('gulp-pug');
 
 const sass = require('gulp-sass');
+const sassGlob = require('gulp-sass-glob');
 const rename = require('gulp-rename');
 const sourcemaps = require('gulp-sourcemaps');
+const stylelint = require('gulp-stylelint');
+var plumber = require('gulp-plumber');
+
+const svgSprite = require('gulp-svg-sprite');
+const svgmin = require('gulp-svgmin');
+const cheerio = require('gulp-cheerio');
+const replace = require('gulp-replace');
 
 const del = require('del');
 
@@ -12,6 +20,7 @@ const browserSync = require('browser-sync').create();
 const gulpWebpack = require('gulp-webpack');
 const webpack = require('webpack');
 const webpackConfig = require('./webpack.config.js');
+const eslint = require('gulp-eslint');
 
 const paths = {
     root: './build',
@@ -40,11 +49,49 @@ function templates() {
         .pipe(gulp.dest(paths.root));
 }
 
+//svg
+function sprite () {
+	return gulp.src(assetsDir + './src/images/icons/*.svg')
+	// минифицируем svg
+		.pipe(svgmin({
+			js2svg: {
+				pretty: true
+			}
+		}))
+		// удаляем атрибуты fill, style и stroke, чтобы они не перебивали стили, заданные через css
+		.pipe(cheerio({
+			run: function ($) {
+				$('[fill]').removeAttr('fill');
+				$('[stroke]').removeAttr('stroke');
+				$('[style]').removeAttr('style');
+			},
+			parserOptions: {xmlMode: true}
+		}))
+		// преобразовываем символ ‘>’ в кодировку '&gt.
+		.pipe(replace('&gt;', '>'))
+		// строим спрайт
+		.pipe(svgSprite({
+			mode: {
+				symbol: {
+					sprite: "../sprite.svg",
+				}
+			}
+		}))
+		.pipe(gulp.dest(paths.images.dest));
+}
+
 // scss
 function styles() {
     return gulp.src('./src/styles/app.scss')
+        .pipe(plumber())
+        .pipe(stylelint({
+            reporters: [
+            {formatter: 'string', console: true}
+            ]
+        }))
         .pipe(sourcemaps.init())
         .pipe(sass({outputStyle: 'compressed'}))
+        .pipe(sassGlob())
         .pipe(sourcemaps.write())
         .pipe(rename({suffix: '.min'}))
         .pipe(gulp.dest(paths.styles.dest))
@@ -58,6 +105,9 @@ function clean() {
 // webpack
 function scripts() {
     return gulp.src('src/scripts/app.js')
+        .pipe(plumber())
+        .pipe(eslint({fix: true}))
+        .pipe(eslint.format())
         .pipe(gulpWebpack(webpackConfig, webpack)) 
         .pipe(gulp.dest(paths.scripts.dest));
 }

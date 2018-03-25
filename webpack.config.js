@@ -9,7 +9,18 @@ const config = {
         new UglifyJSPlugin({
             sourceMap: true
         })
-    ]
+    ],
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                loader: 'babel-loader',
+                }
+            }
+        ]
+    }
 };
 
 module.exports = config;

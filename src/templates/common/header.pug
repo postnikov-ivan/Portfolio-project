@@ -1,0 +1,23 @@
+header.section.hero
+      .hero__links
+        - 
+          var socials = [
+            ['vk', 'vk.com'],
+            ['tw', 'tw.com'],
+            ['in', 'in.com'],
+          ]
+        ul.socials
+          each item in socials
+            li.socials__item
+              a(href=`${item[1]}`).socials__link #{item[0]}
+      .hero__menu.hamburger
+      .hero__title
+        .section-title
+          img.section-title__img(src="", alt="")
+        .user.hero__user
+          .user__pic
+            img.user__avatar(src="", alt="")
+          .user__description
+            .user__name Постников Иван
+            .user__desc Личный сайт разработчика
+      .arrow-down.hero__scroll-button

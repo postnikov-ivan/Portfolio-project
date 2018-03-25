@@ -1,0 +1,60 @@
+extends ../template
+
+block variables
+    - var title = 'Обо мне'
+
+block content
+    include ../common/footer.pug
+    main.section.about
+      .about__left
+        .triangle.about__triangle-left
+          svg.triangle-shape.triangle-shape_fill_white
+
+        .about__left-title
+          .block-title Обо мне
+        .about__left-description
+          .user-description
+            .user-description__image
+              img.user-description__avatar(src="", alt="")
+            .user-description__title
+              .block-subtitle Кто я
+            .user-description__text
+              p Я веб разработчик из Барнаула. Мне 27 лет. Я занимаюсь разработкой современных сайтов и приложений. Мне нравится делать интересные и современные проекты.
+              p Этот сайт я сделал в рамках обучения в Школе онлайн образования LoftSchool. Чуть позже я освежу в нём свой контент. А пока посмотрите,как тут всё классно и красиво!
+      .about__right
+        .triangle.about__triangle-right
+          svg.triangle-shape.triangle-shape_fill_beige
+        .about__right-title
+          .block-subtitle Чем я могу быть вам полезен
+        .about__right-description.text-content
+          p Больше всего меня привлекет Frontend разработка, но я также знаком и могу решать не сложные задачи на Backend. Но давайте по порядку.
+        .about__right-content
+          ul.skills-list
+            each item in ['frontend', 'backend', 'workflow']
+              li.skills-list__item
+                .skills-row
+                  .skills-row__title #{item}
+                  ul.skills-row__list
+                    li.skills-row__item
+                      .skill
+                        svg.skill__circle
+                        .skill__title Html 5
+    section.section.map
+      .google-map
+      .map__data
+        .contacts
+          .contacts__title
+            .block-subtitle Контакты
+            ul.contacts__list
+              - 
+                var contacts = [
+                  ['skype', 'skype_kdn'],
+                  ['email', 'email_kdn'],
+                  ['phone', 'phone_kdn'],
+                  ['address', 'address_kdn'],
+               ]
+              each item in contacts
+                li.contacts__item.contacts-row
+                  .contacts-row__icon #{item[0]}
+                  .contacts-row__title #{item[1]}
+    include ../common/footer.pug
